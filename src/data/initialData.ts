@@ -1,0 +1,520 @@
+import { Habit, RoutineItem, FoodPreset, UserGoals, DietMeal, DailyWellnessLog } from '../types';
+import { getTodayDateString, addDays } from '../utils/dateUtils';
+
+export const DEFAULT_USER_GOALS: UserGoals = {
+  calorieTarget: 2150,
+  proteinTarget: 140, // grams
+  carbsTarget: 220, // grams
+  fatTarget: 65, // grams
+  waterTargetMl: 2800, // ml
+  dailySleepTargetHours: 8,
+};
+
+export const INITIAL_HABITS: Habit[] = [
+  {
+    id: 'habit-1',
+    title: 'Morning Hydration',
+    description: 'Drink 500ml pure water upon waking to rehydrate',
+    category: 'health',
+    color: 'sky',
+    icon: 'Droplets',
+    frequency: 'daily',
+    type: 'numeric',
+    targetValue: 500,
+    unit: 'ml',
+    createdAt: '2026-09-01',
+  },
+  {
+    id: 'habit-2',
+    title: 'Daily Movement / Workout',
+    description: '30+ minutes of resistance training, cardio, or brisk walking',
+    category: 'fitness',
+    color: 'emerald',
+    icon: 'Activity',
+    frequency: 'daily',
+    type: 'numeric',
+    targetValue: 30,
+    unit: 'mins',
+    createdAt: '2026-09-01',
+  },
+  {
+    id: 'habit-3',
+    title: 'Read 15 Pages',
+    description: 'Non-fiction, technical, or personal development literature',
+    category: 'mind',
+    color: 'indigo',
+    icon: 'BookOpen',
+    frequency: 'daily',
+    type: 'numeric',
+    targetValue: 15,
+    unit: 'pages',
+    createdAt: '2026-09-01',
+  },
+  {
+    id: 'habit-4',
+    title: 'Mindful Meditation',
+    description: '10 minutes of box breathing or calm guided awareness',
+    category: 'mind',
+    color: 'teal',
+    icon: 'Sparkles',
+    frequency: 'daily',
+    type: 'numeric',
+    targetValue: 10,
+    unit: 'mins',
+    createdAt: '2026-09-01',
+  },
+  {
+    id: 'habit-5',
+    title: 'Clean Diet (Zero Junk Sugar)',
+    description: 'No soda, processed candy, or deep-fried fast food',
+    category: 'diet',
+    color: 'amber',
+    icon: 'Apple',
+    frequency: 'daily',
+    type: 'boolean',
+    createdAt: '2026-09-01',
+  },
+  {
+    id: 'habit-6',
+    title: 'Digital Wind-Down',
+    description: 'Put screens away 45 minutes before sleep',
+    category: 'lifestyle',
+    color: 'rose',
+    icon: 'Moon',
+    frequency: 'daily',
+    type: 'boolean',
+    createdAt: '2026-09-01',
+  },
+];
+
+export const INITIAL_ROUTINE: RoutineItem[] = [
+  // Morning
+  {
+    id: 'routine-1',
+    title: 'Wake up, hydrate & sunlight exposure',
+    phase: 'morning',
+    time: '07:00',
+    durationMinutes: 15,
+    category: 'Health',
+    notes: 'Open blinds, drink 500ml water',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+  {
+    id: 'routine-2',
+    title: 'Full body mobility & stretch',
+    phase: 'morning',
+    time: '07:20',
+    durationMinutes: 20,
+    category: 'Fitness',
+    notes: 'Hip openers, thoracic rotation, posture stretch',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+  {
+    id: 'routine-3',
+    title: 'Nutritious high-protein breakfast',
+    phase: 'morning',
+    time: '07:45',
+    durationMinutes: 30,
+    category: 'Diet',
+    notes: 'Eggs, oatmeal, black coffee',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+  {
+    id: 'routine-4',
+    title: 'Review daily top 3 priorities',
+    phase: 'morning',
+    time: '08:20',
+    durationMinutes: 10,
+    category: 'Productivity',
+    notes: 'Set intent for the day',
+    daysOfWeek: [1, 2, 3, 4, 5],
+  },
+  // Afternoon
+  {
+    id: 'routine-5',
+    title: 'Wholesome lunch & 15-min outdoor walk',
+    phase: 'afternoon',
+    time: '12:30',
+    durationMinutes: 45,
+    category: 'Diet & Movement',
+    notes: 'Balanced macros, fresh air to beat afternoon slump',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+  {
+    id: 'routine-6',
+    title: 'Midday hydration & eye break',
+    phase: 'afternoon',
+    time: '15:00',
+    durationMinutes: 10,
+    category: 'Health',
+    notes: 'Drink tall glass of water, 20-20-20 screen rest',
+    daysOfWeek: [1, 2, 3, 4, 5],
+  },
+  {
+    id: 'routine-7',
+    title: 'Gym workout or aerobic training',
+    phase: 'afternoon',
+    time: '17:30',
+    durationMinutes: 50,
+    category: 'Fitness',
+    notes: 'Strength session or 5km run',
+    daysOfWeek: [1, 2, 3, 4, 5, 6],
+  },
+  // Evening
+  {
+    id: 'routine-8',
+    title: 'Healthy balanced dinner',
+    phase: 'evening',
+    time: '19:30',
+    durationMinutes: 40,
+    category: 'Diet',
+    notes: 'Lean protein, roasted veggies, complex carbs',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+  {
+    id: 'routine-9',
+    title: 'Read fiction or non-fiction book',
+    phase: 'evening',
+    time: '21:15',
+    durationMinutes: 30,
+    category: 'Mind',
+    notes: 'Dim ambient lights, quiet setting',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+  // Night
+  {
+    id: 'routine-10',
+    title: 'Nightly reflection & sleep prep',
+    phase: 'night',
+    time: '22:15',
+    durationMinutes: 15,
+    category: 'Lifestyle',
+    notes: 'Log habits, cool bedroom to 19°C',
+    daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+  },
+];
+
+export const FOOD_PRESETS: FoodPreset[] = [
+  // Breakfasts
+  {
+    id: 'food-1',
+    name: 'Oatmeal with Blueberries & Honey',
+    defaultMealType: 'breakfast',
+    calories: 340,
+    protein: 11,
+    carbs: 58,
+    fat: 6,
+    category: 'Breakfast',
+  },
+  {
+    id: 'food-2',
+    name: '3 Scrambled Eggs & Whole Wheat Toast',
+    defaultMealType: 'breakfast',
+    calories: 380,
+    protein: 24,
+    carbs: 26,
+    fat: 18,
+    category: 'Breakfast',
+  },
+  {
+    id: 'food-3',
+    name: 'Greek Yogurt Bowl with Chia & Berries',
+    defaultMealType: 'breakfast',
+    calories: 270,
+    protein: 22,
+    carbs: 28,
+    fat: 7,
+    category: 'Breakfast',
+  },
+  {
+    id: 'food-4',
+    name: 'Whey Protein Shake (with Milk & Banana)',
+    defaultMealType: 'breakfast',
+    calories: 320,
+    protein: 34,
+    carbs: 38,
+    fat: 4,
+    category: 'Breakfast',
+  },
+  // Lunch
+  {
+    id: 'food-5',
+    name: 'Grilled Chicken Breast Bowl with Brown Rice',
+    defaultMealType: 'lunch',
+    calories: 520,
+    protein: 46,
+    carbs: 55,
+    fat: 12,
+    category: 'Lunch',
+  },
+  {
+    id: 'food-6',
+    name: 'Mediterranean Quinoa & Chickpea Salad',
+    defaultMealType: 'lunch',
+    calories: 440,
+    protein: 16,
+    carbs: 62,
+    fat: 14,
+    category: 'Lunch',
+  },
+  {
+    id: 'food-7',
+    name: 'Tuna Salad Wrap with Avocado',
+    defaultMealType: 'lunch',
+    calories: 460,
+    protein: 38,
+    carbs: 35,
+    fat: 16,
+    category: 'Lunch',
+  },
+  // Dinner
+  {
+    id: 'food-8',
+    name: 'Pan-Seared Salmon with Steamed Asparagus & Sweet Potato',
+    defaultMealType: 'dinner',
+    calories: 580,
+    protein: 42,
+    carbs: 45,
+    fat: 22,
+    category: 'Dinner',
+  },
+  {
+    id: 'food-9',
+    name: 'Lean Ground Turkey Bolognese with Pasta',
+    defaultMealType: 'dinner',
+    calories: 550,
+    protein: 44,
+    carbs: 60,
+    fat: 14,
+    category: 'Dinner',
+  },
+  {
+    id: 'food-10',
+    name: 'Tofu & Mixed Veggie Teriyaki Stir-Fry',
+    defaultMealType: 'dinner',
+    calories: 410,
+    protein: 22,
+    carbs: 52,
+    fat: 13,
+    category: 'Dinner',
+  },
+  // Snacks
+  {
+    id: 'food-11',
+    name: 'Apple Slices with 2 tbsp Peanut Butter',
+    defaultMealType: 'snack',
+    calories: 260,
+    protein: 8,
+    carbs: 30,
+    fat: 16,
+    category: 'Snack',
+  },
+  {
+    id: 'food-12',
+    name: 'Handful of Raw Almonds & Walnuts (35g)',
+    defaultMealType: 'snack',
+    calories: 210,
+    protein: 6,
+    carbs: 7,
+    fat: 19,
+    category: 'Snack',
+  },
+  {
+    id: 'food-13',
+    name: 'Protein Bar (Low Sugar)',
+    defaultMealType: 'snack',
+    calories: 210,
+    protein: 20,
+    carbs: 22,
+    fat: 7,
+    category: 'Snack',
+  },
+];
+
+export function generateSeedData() {
+  const today = getTodayDateString();
+  const dMinus1 = addDays(today, -1);
+  const dMinus2 = addDays(today, -2);
+  const dMinus3 = addDays(today, -3);
+  const dMinus4 = addDays(today, -4);
+  const dMinus5 = addDays(today, -5);
+
+  const habitLogs: Record<string, boolean> = {
+    // Yesterday
+    [`${dMinus1}_habit-1`]: true,
+    [`${dMinus1}_habit-2`]: true,
+    [`${dMinus1}_habit-3`]: true,
+    [`${dMinus1}_habit-4`]: true,
+    [`${dMinus1}_habit-5`]: true,
+    [`${dMinus1}_habit-6`]: true,
+    // 2 days ago
+    [`${dMinus2}_habit-1`]: true,
+    [`${dMinus2}_habit-2`]: true,
+    [`${dMinus2}_habit-3`]: true,
+    [`${dMinus2}_habit-4`]: false,
+    [`${dMinus2}_habit-5`]: true,
+    [`${dMinus2}_habit-6`]: true,
+    // 3 days ago
+    [`${dMinus3}_habit-1`]: true,
+    [`${dMinus3}_habit-2`]: true,
+    [`${dMinus3}_habit-3`]: true,
+    [`${dMinus3}_habit-4`]: true,
+    [`${dMinus3}_habit-5`]: false,
+    [`${dMinus3}_habit-6`]: true,
+    // 4 days ago
+    [`${dMinus4}_habit-1`]: true,
+    [`${dMinus4}_habit-2`]: false,
+    [`${dMinus4}_habit-3`]: true,
+    [`${dMinus4}_habit-4`]: true,
+    [`${dMinus4}_habit-5`]: true,
+    [`${dMinus4}_habit-6`]: true,
+    // 5 days ago
+    [`${dMinus5}_habit-1`]: true,
+    [`${dMinus5}_habit-2`]: true,
+    [`${dMinus5}_habit-3`]: true,
+    [`${dMinus5}_habit-4`]: true,
+    [`${dMinus5}_habit-5`]: true,
+    [`${dMinus5}_habit-6`]: false,
+    // Today partial completions
+    [`${today}_habit-1`]: true,
+    [`${today}_habit-2`]: true,
+    [`${today}_habit-3`]: true,
+    [`${today}_habit-5`]: true,
+  };
+
+  const habitValues: Record<string, number> = {
+    [`${today}_habit-1`]: 500,
+    [`${today}_habit-2`]: 40,
+    [`${today}_habit-3`]: 15,
+    [`${dMinus1}_habit-1`]: 500,
+    [`${dMinus1}_habit-2`]: 45,
+    [`${dMinus1}_habit-3`]: 20,
+    [`${dMinus1}_habit-4`]: 10,
+  };
+
+  const routineLogs: Record<string, string[]> = {
+    [dMinus1]: ['routine-1', 'routine-2', 'routine-3', 'routine-4', 'routine-5', 'routine-6', 'routine-7', 'routine-8', 'routine-9', 'routine-10'],
+    [dMinus2]: ['routine-1', 'routine-2', 'routine-3', 'routine-5', 'routine-7', 'routine-8', 'routine-9'],
+    [today]: ['routine-1', 'routine-2', 'routine-3', 'routine-4'],
+  };
+
+  const dietMeals: Record<string, DietMeal[]> = {
+    [today]: [
+      {
+        id: 'meal-today-1',
+        mealType: 'breakfast',
+        name: '3 Scrambled Eggs & Whole Wheat Toast',
+        calories: 380,
+        protein: 24,
+        carbs: 26,
+        fat: 18,
+        time: '07:50',
+      },
+      {
+        id: 'meal-today-2',
+        mealType: 'lunch',
+        name: 'Grilled Chicken Breast Bowl with Brown Rice',
+        calories: 520,
+        protein: 46,
+        carbs: 55,
+        fat: 12,
+        time: '12:45',
+      },
+      {
+        id: 'meal-today-3',
+        mealType: 'snack',
+        name: 'Apple Slices with Peanut Butter',
+        calories: 260,
+        protein: 8,
+        carbs: 30,
+        fat: 16,
+        time: '16:00',
+      },
+    ],
+    [dMinus1]: [
+      {
+        id: 'meal-yest-1',
+        mealType: 'breakfast',
+        name: 'Oatmeal with Blueberries & Honey',
+        calories: 340,
+        protein: 11,
+        carbs: 58,
+        fat: 6,
+        time: '08:00',
+      },
+      {
+        id: 'meal-yest-2',
+        mealType: 'lunch',
+        name: 'Tuna Salad Wrap with Avocado',
+        calories: 460,
+        protein: 38,
+        carbs: 35,
+        fat: 16,
+        time: '13:00',
+      },
+      {
+        id: 'meal-yest-3',
+        mealType: 'dinner',
+        name: 'Pan-Seared Salmon with Steamed Asparagus & Sweet Potato',
+        calories: 580,
+        protein: 42,
+        carbs: 45,
+        fat: 22,
+        time: '19:40',
+      },
+      {
+        id: 'meal-yest-4',
+        mealType: 'snack',
+        name: 'Whey Protein Shake',
+        calories: 220,
+        protein: 30,
+        carbs: 10,
+        fat: 3,
+        time: '17:30',
+      },
+    ],
+  };
+
+  const waterIntakes: Record<string, number> = {
+    [today]: 1750,
+    [dMinus1]: 2800,
+    [dMinus2]: 2500,
+    [dMinus3]: 2400,
+  };
+
+  const wellnessLogs: Record<string, DailyWellnessLog> = {
+    [today]: {
+      date: today,
+      mood: 'great',
+      energyLevel: 4,
+      sleepHours: 7.8,
+      sleepQuality: 'restful',
+      journalNote: 'High energy after morning mobility. Focused and calm workday.',
+    },
+    [dMinus1]: {
+      date: dMinus1,
+      mood: 'good',
+      energyLevel: 4,
+      sleepHours: 8.2,
+      sleepQuality: 'restful',
+      journalNote: 'Accomplished every single routine milestone and met all protein targets.',
+    },
+    [dMinus2]: {
+      date: dMinus2,
+      mood: 'neutral',
+      energyLevel: 3,
+      sleepHours: 6.5,
+      sleepQuality: 'average',
+      journalNote: 'Woke up a bit tired but caught up after afternoon workout.',
+    },
+  };
+
+  return {
+    habitLogs,
+    habitValues,
+    routineLogs,
+    dietMeals,
+    waterIntakes,
+    wellnessLogs,
+  };
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Habit & Routine Tracker",
+  "description": "Comprehensive daily routine, habit streak tracking, diet and nutrition logger.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
